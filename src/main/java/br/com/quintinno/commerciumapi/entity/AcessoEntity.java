@@ -1,7 +1,8 @@
 package br.com.quintinno.commerciumapi.entity;
 
-import java.io.Serializable;
 import java.time.LocalDate;
+
+import org.springframework.security.core.GrantedAuthority;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +17,7 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(schema = "public", name = "TB_ACESSO")
 @SequenceGenerator(name = "SQ_ACESSO", sequenceName = "SQ_ACESSO", allocationSize = 1, initialValue = 1)
-public class AcessoEntity implements Serializable {
+public class AcessoEntity implements GrantedAuthority {
 
     @SuppressWarnings("unused")
     private static final Long serialVersionUID = 1L;
@@ -27,7 +28,7 @@ public class AcessoEntity implements Serializable {
     private Long code;
 
     @Column(name = "DESCRICAO", length = 100, nullable = false)
-    private String desrcicao;
+    private String descricao;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "DATA_CADASTRO", nullable = false)
@@ -44,6 +45,11 @@ public class AcessoEntity implements Serializable {
         this.dataCadastro = LocalDate.now();
     }
 
+    @Override
+    public String getAuthority() {
+        return this.descricao;
+    }
+
     public Long getCode() {
         return code;
     }
@@ -52,12 +58,12 @@ public class AcessoEntity implements Serializable {
         this.code = code;
     }
 
-    public String getDesrcicao() {
-        return desrcicao;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setDesrcicao(String desrcicao) {
-        this.desrcicao = desrcicao;
+    public void setDescricao(String desrcicao) {
+        this.descricao = desrcicao;
     }
 
     public LocalDate getDataCadastro() {
