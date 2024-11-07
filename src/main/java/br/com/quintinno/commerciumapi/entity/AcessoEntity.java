@@ -1,6 +1,7 @@
 package br.com.quintinno.commerciumapi.entity;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,24 +10,39 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
-@Table(schema = "public", name = "TB_TIPO_PESSOA")
-@SequenceGenerator(name = "SQ_TIPO_PESSOA", sequenceName = "SQ_TIPO_PESSOA", allocationSize = 1, initialValue = 1)
-public class TipoPessoaEntity implements Serializable {
+@Table(schema = "public", name = "TB_ACESSO")
+@SequenceGenerator(name = "SQ_ACESSO", sequenceName = "SQ_ACESSO", allocationSize = 1, initialValue = 1)
+public class AcessoEntity implements Serializable {
 
     @SuppressWarnings("unused")
     private static final Long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SQ_TIPO_PESSOA")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SQ_ACESSO")
     @Column(name = "CODE", nullable = false)
     private Long code;
 
     @Column(name = "DESCRICAO", length = 100, nullable = false)
     private String desrcicao;
 
-    public TipoPessoaEntity() { }
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DATA_CADASTRO", nullable = false)
+    private LocalDate dataCadastro;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DATA_ATUALIZACAO")
+    private LocalDate dataAtualizacao;
+
+    @Column(name = "USUARIO_ATUALIZACAO", length = 50)
+    private String usuarioAtualizacao;
+
+    public AcessoEntity() {
+        this.dataCadastro = LocalDate.now();
+    }
 
     public Long getCode() {
         return code;
@@ -42,6 +58,30 @@ public class TipoPessoaEntity implements Serializable {
 
     public void setDesrcicao(String desrcicao) {
         this.desrcicao = desrcicao;
+    }
+
+    public LocalDate getDataCadastro() {
+        return dataCadastro;
+    }
+
+    public void setDataCadastro(LocalDate dataCadastro) {
+        this.dataCadastro = dataCadastro;
+    }
+
+    public LocalDate getDataAtualizacao() {
+        return dataAtualizacao;
+    }
+
+    public void setDataAtualizacao(LocalDate dataAtualizacao) {
+        this.dataAtualizacao = dataAtualizacao;
+    }
+
+    public String getUsuarioAtualizacao() {
+        return usuarioAtualizacao;
+    }
+
+    public void setUsuarioAtualizacao(String usuarioAtualizacao) {
+        this.usuarioAtualizacao = usuarioAtualizacao;
     }
 
     @Override
@@ -60,7 +100,7 @@ public class TipoPessoaEntity implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        TipoPessoaEntity other = (TipoPessoaEntity) obj;
+        AcessoEntity other = (AcessoEntity) obj;
         if (code == null) {
             if (other.code != null)
                 return false;
