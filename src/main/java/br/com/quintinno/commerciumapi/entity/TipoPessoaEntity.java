@@ -9,7 +9,7 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "TB_TIPO_PESSOA", schema = "public")
+@Table(schema = "public", name = "TB_TIPO_PESSOA")
 @SequenceGenerator(name = "SQ_TIPO_PESSOA", sequenceName = "SQ_TIPO_PESSOA", allocationSize = 1, initialValue = 1)
 public class TipoPessoaEntity {
 
@@ -18,7 +18,7 @@ public class TipoPessoaEntity {
     @Column(name = "CODE", nullable = false)
     private Long code;
 
-    @Column(name = "DESCRICAO", nullable = false)
+    @Column(name = "DESCRICAO", length = 100, nullable = false)
     private String desrcicao;
 
     public TipoPessoaEntity() { }
