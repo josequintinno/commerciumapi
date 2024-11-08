@@ -1,7 +1,10 @@
 package br.com.quintinno.commerciumapi.entity;
 
-import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,10 +21,7 @@ import jakarta.persistence.TemporalType;
 @Entity
 @Table(schema = "public", name = "TB_USUARIO")
 @SequenceGenerator(name = "SQ_USUARIO", sequenceName = "SQ_USUARIO", allocationSize = 1, initialValue = 1)
-public class UsuarioEntity implements Serializable {
-
-    @SuppressWarnings("unused")
-    private static final Long serialVersionUID = 1L;
+public class UsuarioEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SQ_PESSOA")
@@ -31,6 +31,15 @@ public class UsuarioEntity implements Serializable {
     @OneToOne
     @JoinColumn(name = "ID_PESSOA", nullable = false)
     private PessoaEntity pessoaEntity;
+
+    // @ManyToMany(fetch = FetchType.LAZY)
+    // @JoinTable(
+    //     name = "TB_USUARIO_ACESSO",
+    //     uniqueConstraints = @UniqueConstraint(columnNames = {"ID_USUARIO", "ID_ACESSO"}, name = "unique_acesso_user"),
+    //     joinColumns = @JoinColumn(name = "ID_USUARIO", referencedColumnName = "CODE"),
+    //     inverseJoinColumns = @JoinColumn(name = "ID_ACESSO", referencedColumnName = "CODE")
+    // )
+    // private List<AcessoEntity> acessoEntityList = new ArrayList<>();
 
     @Column(name = "IDENTIFICADOR", length = 100, nullable = false)
     private String identificador;
@@ -51,6 +60,21 @@ public class UsuarioEntity implements Serializable {
 
     public UsuarioEntity() { 
         this.dataCadastro = LocalDate.now();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.identificador;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.senha;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
     }
 
     public Long getCode() {
