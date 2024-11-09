@@ -53,6 +53,9 @@ comment on table tb_tipo_pessoa IS 'Responsável por armazenar os dados referent
 comment on column tb_tipo_pessoa.codigo IS 'Identificador único da tabela';
 comment on column tb_tipo_pessoa.descricao IS 'Descrição única do tipo de pessoa. Podem ser: Pessoa Física ou Pessoa Jurídica';
 
+insert into tb_tipo_pessoa (descricao) values ('Pessoa Física');
+insert into tb_tipo_pessoa (descricao) values ('Pessoa Jurídica');
+
 drop table if exists tb_pessoa cascade;
 create table if not exists tb_pessoa (
 	codigo bigserial not null,
@@ -72,6 +75,9 @@ comment on column tb_pessoa.data_cadastro IS 'Data de cadastro de uma determinad
 comment on column tb_pessoa.data_atualizacao IS 'Data de alteração de uma determinada pessoa';
 comment on column tb_pessoa.usuario_atualizacao IS 'Identificador do usuário que realizou a alteração do cadastro de uma determinada pessoa';
 
+insert into tb_pessoa (id_tipo_pessoa, nome) values (1, 'Cláudia Lara Brenda Campos');
+insert into tb_pessoa (id_tipo_pessoa, nome) values (1, 'Vinicius Benício Edson da Conceição');
+
 drop table if exists tb_usuario cascade;
 create table if not exists tb_usuario (
 	codigo bigserial not null,
@@ -85,6 +91,9 @@ create table if not exists tb_usuario (
 	constraint fk_usuario_id_pessoa foreign key (id_pessoa) references tb_pessoa (codigo),
 	constraint un_usuario_identificador unique (identificador)
 );
+
+insert into tb_usuario (id_pessoa, identificador, senha) values (1, '62864478064', 'hj5tO6PRgOhj5tO6PRgO');
+insert into tb_usuario (id_pessoa, identificador, senha) values (2, '70824613309', 'Xmnu4t3DNdXmnu4t3DNd');
 
 drop table if exists tb_acesso cascade;
 create table if not exists tb_acesso (
@@ -241,6 +250,8 @@ create table if not exists tb_produto_arquivo (
 	codigo bigserial not null,
 	id_produto serial not null,
 	id_arquivo serial not null,
+	imagem_original varchar (255) not null,
+	imagem_miniatura varchar (255) null,
 	constraint pk_produto_arquivo primary key (codigo),
 	constraint fk_produto foreign key (id_produto) references tb_produto (codigo),
 	constraint fk_arquivo foreign key (id_arquivo) references tb_arquivo (codigo),
@@ -331,19 +342,25 @@ insert into tb_produto_tag (id_produto, id_tag) values (
 
 -- select * from tb_produto_arquivo;
 
-insert into tb_produto_arquivo (id_produto, id_arquivo) values (
+insert into tb_produto_arquivo (id_produto, id_arquivo, imagem_original, imagem_miniatura) values (
 	(select codigo from tb_produto where nome = 'Homo Deus'),
-	(select codigo from tb_arquivo where nome = 'Frente')
+	(select codigo from tb_arquivo where nome = 'Frente'),
+	'sgsgsgfdgdgdgsdfgdfgsddbsgfhntntdyyjd',
+	null
 );
 
-insert into tb_produto_arquivo (id_produto, id_arquivo) values (
+insert into tb_produto_arquivo (id_produto, id_arquivo, imagem_original, imagem_miniatura) values (
 	(select codigo from tb_produto where nome = 'Homo Deus'),
-	(select codigo from tb_arquivo where nome = 'Lado')
+	(select codigo from tb_arquivo where nome = 'Lado'),
+	'sfsgasgadsghfdghdhdfhfdhdhadhdhadhh',
+	null
 );
 
-insert into tb_produto_arquivo (id_produto, id_arquivo) values (
+insert into tb_produto_arquivo (id_produto, id_arquivo, imagem_original, imagem_miniatura) values (
 	(select codigo from tb_produto where nome = 'Homo Deus'),
-	(select codigo from tb_arquivo where nome = 'Tras')
+	(select codigo from tb_arquivo where nome = 'Tras'),
+	'sfsgasgadsghfdghdhdfhfdhdhadhdhadhh',
+	null
 );
 
 /*
@@ -411,6 +428,8 @@ create table if not exists tb_tipo_endereco (
 	constraint pk_tipo_endereco_codigo primary key (codigo)
 );
 
+insert into tb_tipo_endereco (descricao) values ('ENTREGA');
+
 drop table if exists tb_estado cascade;
 create table if not exists tb_estado (
 	codigo bigserial not null,
@@ -433,7 +452,7 @@ create table if not exists tb_endereco (
 	id_tipo_endereco serial not null,
 	id_pessoa serial not null,
 	id_cidade serial not null,
-	descricao varchar (200) not null,
+	endereco varchar (200) not null,
 	numero varchar (10) not null,
 	bairro varchar (100) null,
 	cep varchar (10) not null,
@@ -442,6 +461,13 @@ create table if not exists tb_endereco (
 	constraint fk_endereco_tipo_endereco foreign key (id_tipo_endereco) references tb_tipo_endereco (codigo),
 	constraint fk_endereco_pessoa foreign key (id_pessoa) references tb_pessoa (codigo),
 	constraint fk_endereco_cidade foreign key (id_cidade) references tb_cidade (codigo)
+);
+
+insert into tb_endereco (id_tipo_endereco, id_pessoa, id_cidade, endereco, numero, bairro, cep, complemento) values (
+	1, 
+	(select codigo from tb_pessoa where codigo = 1),
+	(select codigo from tb_cidade where nome like 'Campo Grande' and id_estado = 12),
+	'Rua Militão Ferreira da Cunha', '424', 'Conjunto Aero Rancho', '9084282', null
 );
 
 /*
@@ -454,7 +480,6 @@ Usuário 				USUÁRIO: Fulano de Tal
 Data/Hora 				11/08/2024 às 13:55				
 Endereço (Entrega) 		Endereço 1
 
-
 ============================================================================================
 */
 
@@ -465,6 +490,10 @@ create table if not exists tb_situacao_financeira (
 	constraint pk_situacao_financeira_codigo primary key (codigo)
 );
 
+insert into tb_situacao_financeira (descricao) values ('PAGO');
+insert into tb_situacao_financeira (descricao) values ('AGUARDANDO');
+insert into tb_situacao_financeira (descricao) values ('ESTORNADO');
+
 drop table if exists tb_forma_pagamento cascade;
 create table if not exists tb_forma_pagamento (
 	codigo bigserial not null,
@@ -472,25 +501,29 @@ create table if not exists tb_forma_pagamento (
 	constraint pk_forma_pagamento_codigo primary key (codigo)
 );
 
+insert into tb_forma_pagamento (descricao) values ('CARTAO_CREDITO');
+insert into tb_forma_pagamento (descricao) values ('CARTAO_DEBITO');
+insert into tb_forma_pagamento (descricao) values ('TRANSFERENCIA_BANCARIA_PIX');
+insert into tb_forma_pagamento (descricao) values ('BOLETO_BANCARIO');
+
 drop table if exists tb_venda cascade;
 create table if not exists tb_venda (
 	codigo bigserial not null,
 	id_usuario serial not null,
 	id_situacao_financeira serial not null,
-	id_forma_pagamento serial not null,
 	data_hora timestamp not null default now(),
 	constraint pk_venda_codigo primary key (codigo),
 	constraint fk_venda_id_usuario foreign key (id_usuario) references tb_usuario (codigo),
-	constraint fk_venda_id_situacao_financeira foreign key (id_situacao_financeira) references tb_situacao_financeira (codigo),
-	constraint fk_venda_id_forma_pagamento foreign key (id_forma_pagamento) references tb_forma_pagamento (codigo)
+	constraint fk_venda_id_situacao_financeira foreign key (id_situacao_financeira) references tb_situacao_financeira (codigo)
 );
+
+insert into tb_venda (id_usuario, id_situacao_financeira) values (1, 2);
 
 drop table if exists tb_venda_produto cascade;
 create table if not exists tb_venda_produto (
 	codigo bigserial not null,
 	id_venda serial not null,
 	id_produto serial not null,
-	valor_produto numeric(10,2) not null,
 	quantidade integer not null,
 	codigo_promocional varchar (100) null,
 	valor_desconto numeric(10,2) null,
@@ -500,21 +533,65 @@ create table if not exists tb_venda_produto (
 	constraint fk_venda_produto_id_produto foreign key (id_produto) references tb_produto (codigo)
 );
 
+insert into tb_venda_produto (id_venda, id_produto, quantidade, codigo_promocional, valor_desconto, valor_total) values (
+	1, 1, 2, null, null, 
+	(select (valor * 2) from tb_produto where codigo = 1)
+);
+
+drop table if exists tb_venda_forma_pagamento cascade;
+create table if not exists tb_venda_forma_pagamento (
+	codigo bigserial not null,
+	id_venda serial not null,
+	id_forma_pagamento serial not null,
+	valor numeric (10,2) not null,
+	constraint pk_venda_forma_pagamento_codigo primary key (codigo),
+	constraint fk_venda_forma_pagamento_id_venda foreign key (id_venda) references tb_venda (codigo),
+	constraint fk_venda_forma_pagamento_id_forma_pagamento foreign key (id_forma_pagamento) references tb_forma_pagamento (codigo),
+	constraint un_venda_forma_pagamento unique (id_venda, id_forma_pagamento)
+);
+
+insert into tb_venda_forma_pagamento (id_venda, id_forma_pagamento, valor) values (1, 1, 100);
+insert into tb_venda_forma_pagamento (id_venda, id_forma_pagamento, valor) values (1, 2, 77);
+
 drop table if exists tb_situacao_nota_fiscal cascade;
 create table if not exists tb_situacao_nota_fiscal (
 	codigo bigserial not null,
-	descricao varchar (100) not null, -- EMITIDA, AGURDANDO
-	constraint pk_situacao_nota_fiscal_codigo primary key (codigo)
+	descricao varchar (100) not null, -- EMITIDA, AGUARDANDO
+	constraint pk_situacao_nota_fiscal_codigo primary key (codigo),
+	constraint un_situacao_nota_fiscal_descricao unique (descricao)
 );
+
+insert into tb_situacao_nota_fiscal (descricao) values ('AGUARDANDO');
+insert into tb_situacao_nota_fiscal (descricao) values ('EMITIDA');
 
 drop table if exists tb_nota_fiscal cascade;
 create table if not exists tb_nota_fiscal (
 	codigo bigserial not null,
 	id_situacao_nota_fiscal serial not null,
 	id_venda_produto serial not null,
-	numero integer not null,
-	data_emissao date not null,
+	numero varchar(50) not null,
+	data_emissao date null,
 	constraint pk_nota_fiscal_codigo primary key (codigo),
 	constraint fk_nota_fiscal_id_situacao_nota_fiscal foreign key (id_situacao_nota_fiscal) references tb_situacao_nota_fiscal (codigo),
-	constraint fk_nota_fiscal_id_venda_produto foreign key (id_venda_produto) references tb_venda_produto (codigo)
+	constraint fk_nota_fiscal_id_venda_produto foreign key (id_venda_produto) references tb_venda_produto (codigo),
+	constraint un_nota_fiscal_numero unique (numero)
 );
+
+insert into tb_nota_fiscal (id_situacao_nota_fiscal, id_venda_produto, numero, data_emissao) values (
+	1, 1, '546484949489', null
+);
+
+/*
+	============================================================================================
+	# Gerenciador de Logística
+	------------------------------------------------------------
+	
+	Código						5d11e2b5-62b9-4dce-8ab0-45c0183b14e1
+	Venda	 					4dce-8ab0-5c01
+	Endereço de Entrega 		62b9-4dce-14e1
+	Data Prevista Entrega 		14/08/2024
+	Transportadora 				Correio
+	Taxa de Transporte (frete) 	R$ 00,00
+	
+	============================================================================================
+*/
